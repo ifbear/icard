@@ -1,0 +1,80 @@
+{
+	"schemaVersion": 5,
+	"permissions": [
+		{
+			"permissions": [
+				{
+					"role": "World",
+					"rights": [
+						"Read"
+					]
+				},
+				{
+					"role": "Authenticated",
+					"rights": [
+						"Read"
+					]
+				},
+				{
+					"role": "Creator",
+					"rights": [
+						"Read",
+						"Upsert",
+						"Delete"
+					]
+				},
+				{
+					"role": "Administrator",
+					"rights": [
+						"Read",
+						"Upsert",
+						"Delete"
+					]
+				}
+			],
+			"objectTypeName": "Card"
+		}
+	],
+	"objectTypes": [
+		{
+			"indexes": [],
+			"objectTypeName": "Card",
+			"fields": [
+				{
+					"isNeedEncrypt": false,
+					"fieldName": "id",
+					"notNull": true,
+					"isSensitive": false,
+					"belongPrimaryKey": true,
+					"fieldType": "String"
+				},
+				{
+					"isNeedEncrypt": false,
+					"fieldName": "name",
+					"notNull": true,
+					"isSensitive": false,
+					"defaultValue": "",
+					"belongPrimaryKey": false,
+					"fieldType": "String"
+				},
+				{
+					"isNeedEncrypt": false,
+					"fieldName": "card_no",
+					"notNull": true,
+					"isSensitive": false,
+					"defaultValue": "",
+					"belongPrimaryKey": false,
+					"fieldType": "String"
+				},
+				{
+					"isNeedEncrypt": false,
+					"fieldName": "update",
+					"notNull": false,
+					"isSensitive": false,
+					"belongPrimaryKey": false,
+					"fieldType": "Date"
+				}
+			]
+		}
+	]
+}
