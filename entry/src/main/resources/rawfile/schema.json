@@ -1,5 +1,5 @@
 {
-	"schemaVersion": 5,
+	"schemaVersion": 10,
 	"permissions": [
 		{
 			"permissions": [
@@ -73,6 +73,33 @@
 					"isSensitive": false,
 					"belongPrimaryKey": false,
 					"fieldType": "Date"
+				},
+				{
+					"isNeedEncrypt": false,
+					"fieldName": "deadline",
+					"notNull": true,
+					"isSensitive": false,
+					"defaultValue": "",
+					"belongPrimaryKey": false,
+					"fieldType": "String"
+				},
+				{
+					"isNeedEncrypt": false,
+					"fieldName": "billday",
+					"notNull": true,
+					"isSensitive": false,
+					"defaultValue": "15",
+					"belongPrimaryKey": false,
+					"fieldType": "Short"
+				},
+				{
+					"isNeedEncrypt": false,
+					"fieldName": "paydate",
+					"notNull": true,
+					"isSensitive": false,
+					"defaultValue": "25",
+					"belongPrimaryKey": false,
+					"fieldType": "String"
 				}
 			]
 		}

@@ -1,13 +1,14 @@
 import cloud, { Database, ObjectTypeInfo } from '@hw-agconnect/cloud';
 import buffer from '@ohos.buffer';
 import { Card } from '../Card';
+import { CardComponent } from '../component/CardComponent';
 
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
   agcDataBase: Database | undefined = undefined
-  @State allCards: Card[] = []
+  @State allCards: Card[] = [new Card()]
 
   async aboutToAppear() {
     try {
@@ -50,37 +51,8 @@ struct Index {
         List({ space: 10 }) {
           ForEach(this.allCards, (item: Card, index: Number) => {
             ListItem() {
-              Stack() {
-                Column() {
-                  // Image($r('app.media.cardBg0'))
-                  //   .width('100%')
-                  //   .alignRules({
-                  //     bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-                  //     right: { anchor: '__container__', align: HorizontalAlign.End },
-                  //     left: { anchor: '__container__', align: HorizontalAlign.Start }
-                  //   })
-                  Image($r('app.media.btnCircleBg0'))
-                    .width('50%')
-                    .height('50%')
-                    .alignRules({
-                      top: { anchor: '__container__', align: VerticalAlign.Top },
-                      right: { anchor: '__container__', align: HorizontalAlign.End }
-                    })
-                }
-                .width('100%')
-                .height('100%')
-                Flex({ direction: FlexDirection.Row }) {
-                  Text(item.name)
-                    .fontWeight(FontWeight.Bold)
-                    .fontSize(24)
-                }
-                .width('100%')
-                .height(150)
-                .borderRadius(8)
-                .padding(10)
-              }
-              .height(150)
-              .width('100%')
+              CardComponent({ item: item, radius: 16.0 })
+                .height(240)
             }
           })
         }
