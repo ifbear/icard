@@ -1,5 +1,5 @@
 import router from '@ohos.router'
-import { Card } from '../Card'
+import { Card } from '../Models'
 import { SubtitleComponent } from './SubtitleComponent'
 import { SheetItem, SheetDialog } from './SheetDialog'
 
@@ -8,25 +8,13 @@ export struct CardComponent {
   item: Card
   radius: Length
   @State isReverse: boolean = false
-  sheetController: CustomDialogController = new CustomDialogController({
-    builder: SheetDialog({
-      items: [
-        new SheetItem('编辑', () => {
-          this.edit()
-        }, Color.Black, 18.0),
-        new SheetItem('删除', () => {
-          this.delete()
-        }, Color.Red, 18.0)
-      ]
-    }),
-    alignment: DialogAlignment.Bottom,
-    offset: { dx: 0, dy: -20 }
-  })
 
+  // 编辑
   edit() {
-    router.pushUrl({ url: "pages/Edit", params: this.item })
+    router.pushUrl({ url: "pages/Edit", params: { 'card': this.item } })
   }
 
+  // 删除
   delete() {
     console.log("删除")
   }
@@ -59,7 +47,7 @@ export struct CardComponent {
         // 卡号
         Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.SpaceBetween }) {
           SubtitleComponent({
-            title: this.item.name,
+            title: this.item.issuer,
             titleColor: Color.White,
             titleSize: 24.0,
             subtitle: this.item.card_no,
@@ -70,7 +58,21 @@ export struct CardComponent {
             Image($r('app.media.moreBtn'))
               .width(44)
               .onClick(() => {
-                this.sheetController.open()
+                const dialog = new CustomDialogController({
+                  builder: SheetDialog({
+                    items: [
+                      new SheetItem('编辑', () => {
+                        this.edit()
+                      }, Color.Black, 18.0),
+                      new SheetItem('删除', () => {
+                        this.delete()
+                      }, Color.Red, 18.0)
+                    ]
+                  }),
+                  alignment: DialogAlignment.Bottom,
+                  offset: { dx: 0, dy: -20 }
+                })
+                dialog.open()
               })
           } else {
             Image($r('app.media.PaidBtn'))
@@ -87,7 +89,7 @@ export struct CardComponent {
               title: '账单日',
               titleColor: Color.Orange,
               titleSize: 16.0,
-              subtitle: '' + this.item.billday,
+              subtitle: this.item.billday,
               subtitleSize: 28.0,
               subtitleColor: Color.White,
               subtitleWeight: FontWeight.Regular
@@ -97,7 +99,7 @@ export struct CardComponent {
               title: '还款日',
               titleColor: Color.Orange,
               titleSize: 16.0,
-              subtitle: '' + this.item.paydate,
+              subtitle: this.item.payday,
               subtitleSize: 28.0,
               subtitleColor: Color.White,
               subtitleWeight: FontWeight.Regular
@@ -127,7 +129,7 @@ export struct CardComponent {
         }
       }
     }
-    .backgroundColor('#895925')
+    .backgroundColor($r('app.color.major'))
     .width('100%')
     .borderRadius(this.radius)
     .onClick(() => {

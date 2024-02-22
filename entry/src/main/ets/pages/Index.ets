@@ -1,50 +1,60 @@
-import cloud, { Database, ObjectTypeInfo } from '@hw-agconnect/cloud';
-import buffer from '@ohos.buffer';
-import { Card } from '../Card';
+import { Card } from '../Models';
 import { CardComponent } from '../component/CardComponent';
+import router from '@ohos.router';
+import buffer from '@ohos.buffer';
+import cloud, { Database, ObjectTypeInfo } from '@hw-agconnect/cloud';
 
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
-  agcDataBase: Database | undefined = undefined
-  @State allCards: Card[] = [new Card()]
+  @State allCards: Card[] = []
+  agcDatabase: Database
 
-  async aboutToAppear() {
+  async getDatabase() {
+    if (this.agcDatabase != null && this.agcDatabase != undefined) { return; }
     try {
-      const info: ObjectTypeInfo = await this.loadObjectInfo()
-      this.agcDataBase = cloud.database({objectTypeInfo: info, zoneName: "ICARD"})
-      this.getCards()
-    } catch (error) {
-      console.log(JSON.stringify(error))
-    }
-  }
-
-  loadObjectInfo(): Promise<ObjectTypeInfo> {
-    return new Promise(async (resolve: Function) => {
       const context = getContext(this)
       const value = await context.resourceManager.getRawFileContent('schema.json');
       let json: string = buffer.from(value).toString("utf8");
-      let objectTypeInfo: ObjectTypeInfo = JSON.parse(json);
-      resolve(objectTypeInfo)
-    })
+      let info: ObjectTypeInfo = JSON.parse(json);
+      this.agcDatabase = cloud.database({ objectTypeInfo: info, zoneName: "ICARD" })
+    } catch (err) {
+      console.log("错误", JSON.stringify(err))
+    }
   }
 
-  async getCards() {
+  /* 页面展示 */
+  async onPageShow() {
     try {
-      const resultArray = await (this.agcDataBase as Database)
+      await this.getDatabase()
+      const resultArray = await this.agcDatabase
         .collection(Card)
         .query()
         .orderByDesc("update")
         .limit(100, 0)
         .get();
       this.allCards = resultArray
-      console.log("query success : " + JSON.stringify(resultArray));
     } catch (err) {
       console.log("query err------------", JSON.stringify(err));
     }
   }
 
+  /* 导航menus */
+  @Builder navigationMenus() {
+    Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.End, alignItems: ItemAlign.Center }) {
+      Image($r('app.media.Add'))
+        .width(24)
+        .height(24)
+        .onClick(() => {
+          const item = new Card()
+          console.log(JSON.stringify(item), "card")
+          router.pushUrl({ url: 'pages/Edit', params: { 'card' : item } })
+        })
+    }
+  }
+
+  // 页面布局
   build() {
     Column() {
       Navigation() {
@@ -58,13 +68,21 @@ struct Index {
         }
         .padding(16)
       }
-      .title("ICARD")
+      .title("")
       .mode(NavigationMode.Stack)
       .titleMode(NavigationTitleMode.Mini)
       .hideBackButton(true)
-
+      .menus(this.navigationMenus())
     }
     .height('100%')
     .width('100%')
+  }
+
+  pageTransition() {
+    PageTransitionEnter({ duration: 200 })
+      .slide(SlideEffect.Bottom)
+    PageTransitionExit({ duration: 200 })
+      .slide(SlideEffect.Top)
+      .opacity(0)
   }
 }

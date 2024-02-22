@@ -14,14 +14,14 @@ export struct SubtitleComponent {
 
   build() {
     Flex({ direction: FlexDirection.Column }) {
-      Text(this.title)
+      Text(this.title ?? '')
         .fontWeight(this.titleWeight)
         .fontSize(this.titleSize)
         .fontColor(this.titleColor)
         .textAlign(this.titleAlign)
         .width('100%')
 
-      Text(this.subtitle)
+      Text(this.subtitle ?? '')
         .fontWeight(this.subtitleWeight)
         .fontSize(this.subtitleSize)
         .padding({ top: 10 })

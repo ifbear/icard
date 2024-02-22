@@ -3,6 +3,14 @@
     {
       "name": "start_window_background",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "major",
+      "value": "#895925"
+    },
+    {
+      "name": "groupBackground",
+      "value": "#EFEFEF"
     }
   ]
 }
