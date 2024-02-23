@@ -6,7 +6,7 @@ export struct PickerDateDialog {
   selected?: Date = new Date()
   selectHandler?: (value: DatePickerResult) => void
   // 当前选中的日期
-  @State __selected?: DatePickerResult = undefined
+  @State changed?: DatePickerResult = undefined
 
   build() {
     Column() {
@@ -25,7 +25,7 @@ export struct PickerDateDialog {
 
         Text('确定')
           .fontWeight(FontWeight.Medium)
-          .fontColor(this.__selected ? $r('app.color.major') : Color.Gray)
+          .fontColor(this.changed ? $r('app.color.major') : Color.Gray)
           .fontSize(18.0)
           .id('confirm')
           .alignRules({
@@ -33,7 +33,8 @@ export struct PickerDateDialog {
             center: { anchor: '__container__', align: VerticalAlign.Center }
           })
           .onClick(() => {
-            this.selectHandler(this.__selected)
+            this.selectHandler(this.changed)
+            this.controller.close()
           })
       }
       .height(44)
@@ -48,7 +49,7 @@ export struct PickerDateDialog {
         .width('100%')
         .height('100%')
         .onChange((value: DatePickerResult) => {
-          this.__selected = value
+          this.changed = value
         })
     }
     .padding(16)

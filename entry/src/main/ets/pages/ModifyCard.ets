@@ -26,6 +26,7 @@ struct Edit {
 
   pickerDateDialog = new CustomDialogController({
     builder: PickerDateDialog({
+      selected: this.card.deadline ? new Date(this.card.deadline) : new Date(),
       selectHandler: (value: DatePickerResult) => {
         const year = '' + value.year
         const mouth = '0' + (value.month + 1)
@@ -194,17 +195,6 @@ struct Edit {
           .backgroundColor(Color.White)
           .fontColor(this.card.deadline ? Color.Black : Color.Gray)
           .onClick(() => {
-            // DatePickerDialog.show({
-            //   start: new Date('1970-01-01'),
-            //   end: new Date('2099-12-31'),
-            //   selected: new Date(this.card.deadline ?? new Date().toDateString()),
-            //   onAccept: (value: DatePickerResult) => {
-            //     const year = '' + value.year
-            //     const mouth = '0' + (value.month + 1)
-            //     const day = '0' + value.day
-            //     this.card.deadline = year + '-' + mouth.substring(mouth.length - 2) + '-' + day.substring(day.length - 2)
-            //   }
-            // })
             this.pickerDateDialog.open()
           })
 
