@@ -3,6 +3,7 @@ import { CardComponent } from '../component/CardComponent';
 import router from '@ohos.router';
 import buffer from '@ohos.buffer';
 import cloud, { Database, ObjectTypeInfo } from '@hw-agconnect/cloud';
+import resourceManager from '@ohos.resourceManager';
 
 @Entry
 @Component
@@ -11,7 +12,14 @@ struct Index {
   @State allCards: Card[] = []
   agcDatabase: Database
 
+  /* 页面展示 */
+  async onPageShow() {
+    await this.getDatabase()
+    await this.getAllCard()
+  }
+
   async getDatabase() {
+    resourceManager
     if (this.agcDatabase != null && this.agcDatabase != undefined) { return; }
     try {
       const context = getContext(this)
@@ -24,10 +32,8 @@ struct Index {
     }
   }
 
-  /* 页面展示 */
-  async onPageShow() {
+  async getAllCard() {
     try {
-      await this.getDatabase()
       const resultArray = await this.agcDatabase
         .collection(Card)
         .query()
@@ -49,7 +55,7 @@ struct Index {
         .onClick(() => {
           const item = new Card()
           console.log(JSON.stringify(item), "card")
-          router.pushUrl({ url: 'pages/Edit', params: { 'card' : item } })
+          router.pushUrl({ url: 'pages/ModifyCard', params: { 'card' : item } })
         })
     }
   }

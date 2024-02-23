@@ -1,17 +1,42 @@
 import router from '@ohos.router'
-import { Card, Issuer } from '../Models'
+import { Card, Issuer, Organize } from '../Models'
 import cloud, { Database, ObjectTypeInfo } from '@hw-agconnect/cloud';
 import buffer from '@ohos.buffer';
 import promptAction from '@ohos.promptAction';
 import { SubtitleComponent } from '../component/SubtitleComponent'
 import { DayDialog } from '../component/DayDialog'
 import { IssuerBank } from './IssuerList'
+import { OrganizeDialog } from '../component/OrganizeDialog';
 
 @Entry
 @Component
 struct Edit {
   @State card?: Card = router.getParams()['card'] as Card
   agcDataBase: Database | undefined = undefined
+
+  organizeDialog = new CustomDialogController({
+    builder: OrganizeDialog({
+      selectHandler: (val) => {
+        this.card.organize = val
+      }
+    }),
+    alignment: DialogAlignment.Center
+  })
+
+  async aboutToAppear() {
+    await this.getDatabase()
+  }
+
+  aboutToDisappear() {
+    this.organizeDialog = null
+  }
+
+  async onPageShow() {
+    if (router.getParams().hasOwnProperty('issuer')) {
+      const issuer = router.getParams()['issuer'] as Issuer
+      this.card.issuer = issuer ? issuer.name : undefined
+    }
+  }
 
   async getDatabase() {
     if (this.agcDataBase != null && this.agcDataBase != undefined) { return; }
@@ -20,14 +45,6 @@ struct Edit {
     let json: string = buffer.from(value).toString("utf8");
     let info: ObjectTypeInfo = JSON.parse(json);
     this.agcDataBase = cloud.database({ objectTypeInfo: info, zoneName: "ICARD" })
-  }
-
-  async onPageShow() {
-    await this.getDatabase()
-    if (router.getParams().hasOwnProperty('issuer')) {
-      const issuer = router.getParams()['issuer'] as Issuer
-      this.card.issuer = issuer ? issuer.name : undefined
-    }
   }
 
   // 导航按钮
@@ -47,7 +64,7 @@ struct Edit {
               router.back()
             }, 3000)
           } catch (error) {
-            promptAction.showToast({ message: JSON.stringify(error), duration: 5000 })
+            promptAction.showToast({ message: JSON.stringify(error), duration: 5000, bottom: '50%' })
           }
         })
     }
@@ -57,7 +74,7 @@ struct Edit {
   build() {
     Navigation() {
       Column() {
-        TextInput({ placeholder: '银行卡号', text: this.card.card_no ?? '' })
+        TextInput({ placeholder: '卡号', text: this.card.card_no ?? '' })
           .maxLength(16)
           .height(52.0)
           .margin({ top: 20 })
@@ -142,6 +159,18 @@ struct Edit {
         }
         .margin({ top: 20 })
 
+        Text(this.card.organize ?? "选择组织（可选）")
+          .padding({ left: 8, right: 8 })
+          .width('100%')
+          .height(52.0)
+          .margin({ top: 20 })
+          .borderRadius(8.0)
+          .backgroundColor(Color.White)
+          .fontColor(this.card.organize ? Color.Black : Color.Gray)
+          .onClick(() => {
+            this.organizeDialog.open()
+          })
+
         Text(this.card.deadline ?? "过期日期")
           .padding({ left: 8, right: 8 })
           .width('100%')
@@ -172,7 +201,7 @@ struct Edit {
     }
     .title("编辑")
     .hideBackButton(false)
-    .backButtonIcon($r('app.media.GoBack'))
+    .backButtonIcon($r('app.media.closeIcon'))
     .titleMode(NavigationTitleMode.Mini)
     .menus(this.navigationMenus())
   }

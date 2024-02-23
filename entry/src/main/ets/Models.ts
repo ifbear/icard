@@ -1,3 +1,4 @@
+import resourceManager from '@ohos.resourceManager';
 /* 组织 */
 export class Organize {
   id?: string

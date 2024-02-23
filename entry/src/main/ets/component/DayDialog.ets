@@ -12,40 +12,47 @@ export struct DayDialog {
   }
 
   build() {
-    Grid() {
-      GridItem() {
+    Column() {
+      Row() {
         Text(this.title)
-          .width('100%')
           .textAlign(TextAlign.Center)
-          .fontSize(24.0)
-          .margin({ top: 10, bottom: 20 })
+          .fontSize(18.0)
+          .fontWeight(FontWeight.Medium)
+          .width('100%')
       }
-      .columnStart(1)
-      .columnEnd(4)
-
-      ForEach(this.days, (day) => {
-        GridItem() {
-          Text('' + day)
+      .height('10%')
+      .width('100%')
+      Row() {
+        Grid() {
+          ForEach(this.days, (day) => {
+            GridItem() {
+              Text('' + day)
+                .width('100%')
+                .height('100%')
+                .textAlign(TextAlign.Center)
+                .fontSize(24.0)
+                .fontColor(Color.Black)
+                .backgroundColor(Color.White)
+                .clip(new Circle({ width: '100%', height: '100%' }))
+                .onClick(() => {
+                  this.selectHandler(day)
+                })
+            }
             .width('100%')
-            .height('100%')
-            .textAlign(TextAlign.Center)
-            .fontSize(24.0)
-            .fontColor(Color.Black)
-            .backgroundColor(Color.White)
-            .clip(new Circle({ width: '100%', height: '100%' }))
-            .onClick(() => {
-              this.selectHandler(day)
-            })
+            .height('12%')
+          })
         }
-        .width('100%')
-        .height('12%')
-      })
+        .rowsGap(10)
+        .columnsGap(10)
+        // .rowsTemplate('1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr')
+        .columnsTemplate('1fr 1fr 1fr 1fr')
+        .padding(10)
+        .backgroundColor('#EFEFEF')
+      }
+      .height('90%')
+      .width('100%')
+
     }
-    .rowsGap(10)
-    .columnsGap(10)
-    // .rowsTemplate('1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr')
-    .columnsTemplate('1fr 1fr 1fr 1fr')
-    .padding(10)
-    .backgroundColor('#EFEFEF')
+    .width('100%')
   }
 }
