@@ -7,6 +7,7 @@ import { SubtitleComponent } from '../component/SubtitleComponent'
 import { DayDialog } from '../component/DayDialog'
 import { IssuerBank } from './IssuerList'
 import { OrganizeDialog } from '../component/OrganizeDialog';
+import { PickerDateDialog } from '../component/PickerDateDialog';
 
 @Entry
 @Component
@@ -23,12 +24,25 @@ struct Edit {
     alignment: DialogAlignment.Center
   })
 
+  pickerDateDialog = new CustomDialogController({
+    builder: PickerDateDialog({
+      selectHandler: (value: DatePickerResult) => {
+        const year = '' + value.year
+        const mouth = '0' + (value.month + 1)
+        const day = '0' + value.day
+        this.card.deadline = year + '-' + mouth.substring(mouth.length - 2) + '-' + day.substring(day.length - 2)
+      }
+    }),
+    alignment: DialogAlignment.Center
+  })
+
   async aboutToAppear() {
     await this.getDatabase()
   }
 
   aboutToDisappear() {
     this.organizeDialog = null
+    this.pickerDateDialog = null
   }
 
   async onPageShow() {
@@ -180,17 +194,18 @@ struct Edit {
           .backgroundColor(Color.White)
           .fontColor(this.card.deadline ? Color.Black : Color.Gray)
           .onClick(() => {
-            DatePickerDialog.show({
-              start: new Date('1970-01-01'),
-              end: new Date('2099-12-31'),
-              selected: new Date(this.card.deadline ?? new Date().toDateString()),
-              onAccept: (value: DatePickerResult) => {
-                const year = '' + value.year
-                const mouth = '0' + (value.month + 1)
-                const day = '0' + value.day
-                this.card.deadline = year + '-' + mouth.substring(mouth.length - 2) + '-' + day.substring(day.length - 2)
-              }
-            })
+            // DatePickerDialog.show({
+            //   start: new Date('1970-01-01'),
+            //   end: new Date('2099-12-31'),
+            //   selected: new Date(this.card.deadline ?? new Date().toDateString()),
+            //   onAccept: (value: DatePickerResult) => {
+            //     const year = '' + value.year
+            //     const mouth = '0' + (value.month + 1)
+            //     const day = '0' + value.day
+            //     this.card.deadline = year + '-' + mouth.substring(mouth.length - 2) + '-' + day.substring(day.length - 2)
+            //   }
+            // })
+            this.pickerDateDialog.open()
           })
 
       }
