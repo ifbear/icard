@@ -54,7 +54,7 @@ struct Index {
         .height(24)
         .onClick(() => {
           const item = new Card()
-          console.log(JSON.stringify(item), "card")
+          item.id = new Date().getTime().toString()
           router.pushUrl({ url: 'pages/ModifyCard', params: { 'card' : item } })
         })
     }

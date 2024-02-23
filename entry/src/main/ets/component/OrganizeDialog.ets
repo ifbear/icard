@@ -1,13 +1,4 @@
-
-class Organize {
-  name: string
-  image: Resource
-
-  constructor(name: string, image: Resource) {
-    this.name = name
-    this.image = image
-  }
-}
+import Organize, { ORGANIZE_MODELS } from '../Models'
 
 @CustomDialog
 export struct OrganizeDialog {
@@ -15,16 +6,7 @@ export struct OrganizeDialog {
 
   selectHandler?: (val: string) => void
 
-  private allOrganize: Organize[] = [
-    new Organize('美国运通',$r('app.media.iconAmericanExpress')),
-    new Organize('威士国际',$r('app.media.iconVisa')),
-    new Organize('万事达',$r('app.media.iconMasterCard')),
-    new Organize('中国银联',$r('app.media.iconChinaUnionPay')),
-    new Organize('大来信用',$r('app.media.iconDinersClub')),
-    new Organize('日本国际',$r('app.media.iconJCB')),
-    new Organize('蚂蚁金服',$r('app.media.iconAnt')),
-    new Organize('其他组织',$r('app.media.iconOther'))
-  ]
+  private allOrganize = ORGANIZE_MODELS
 
   /* 页面展示 */
   async aboutToAppear() {
@@ -46,7 +28,7 @@ export struct OrganizeDialog {
           ForEach(this.allOrganize, (item: Organize) => {
             GridItem() {
               Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
-                Image(item.image)
+                Image(item.major_image)
                   .objectFit(ImageFit.ScaleDown)
                   .height(80)
                   .borderRadius(8)

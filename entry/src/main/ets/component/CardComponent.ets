@@ -1,5 +1,5 @@
 import router from '@ohos.router'
-import { Card } from '../Models'
+import Organize, { Card, ORGANIZE_MODELS } from '../Models'
 import { SubtitleComponent } from './SubtitleComponent'
 import { SheetItem, SheetDialog } from './SheetDialog'
 
@@ -17,6 +17,15 @@ export struct CardComponent {
   // 删除
   delete() {
     console.log("删除")
+  }
+
+  getOrganizeImageResource(item: Card): Resource {
+    let organize = ORGANIZE_MODELS.find(({ name }) => name === item.organize )
+    if (organize) {
+      return organize.white_image
+    } else {
+      return $r("app.media.iconOther_white")
+    }
   }
 
   build() {
@@ -54,6 +63,7 @@ export struct CardComponent {
             subtitleColor: Color.White,
             subtitleSize: 28.0
           })
+
           if (this.isReverse === true) {
             Image($r('app.media.moreBtn'))
               .width(44)
@@ -77,6 +87,8 @@ export struct CardComponent {
           } else {
             Image($r('app.media.PaidBtn'))
               .width(44)
+              .onClick(() => {
+              })
           }
         }
         .width('100%')
@@ -120,14 +132,15 @@ export struct CardComponent {
               subtitleColor: Color.White,
               subtitleWeight: FontWeight.Regular
             })
-            Image($r('app.media.iconChinaUnionPay'))
-              .width(80)
+            Image(this.getOrganizeImageResource(this.item))
+              .width(120)
           }
           .width('100%')
           .height('50%')
           .padding(16)
         }
       }
+
     }
     .backgroundColor($r('app.color.major'))
     .width('100%')

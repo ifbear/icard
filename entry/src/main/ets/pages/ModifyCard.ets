@@ -1,5 +1,5 @@
 import router from '@ohos.router'
-import { Card, Issuer, Organize } from '../Models'
+import { Card, Issuer } from '../Models'
 import cloud, { Database, ObjectTypeInfo } from '@hw-agconnect/cloud';
 import buffer from '@ohos.buffer';
 import promptAction from '@ohos.promptAction';
@@ -186,7 +186,7 @@ struct Edit {
             this.organizeDialog.open()
           })
 
-        Text(this.card.deadline ?? "过期日期")
+        Text(this.card.deadline ?? "选择有效期（可选）")
           .padding({ left: 8, right: 8 })
           .width('100%')
           .height(52.0)
@@ -196,6 +196,18 @@ struct Edit {
           .fontColor(this.card.deadline ? Color.Black : Color.Gray)
           .onClick(() => {
             this.pickerDateDialog.open()
+          })
+
+        TextInput({ placeholder: '备注内容', text: this.card.remark ?? '' })
+          .maxLength(16)
+          .height(52.0)
+          .margin({ top: 20 })
+          .placeholderColor(Color.Gray)
+          .borderRadius(8.0)
+          .backgroundColor(Color.White)
+          .padding({ left: 8, right: 8 })
+          .onChange((val: string) => {
+            this.card.remark = val
           })
 
       }
