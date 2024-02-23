@@ -13,7 +13,7 @@ export struct SubtitleComponent {
   subtitleAlign?: TextAlign
 
   build() {
-    Flex({ direction: FlexDirection.Column }) {
+    Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.End }) {
       Text(this.title ?? '')
         .fontWeight(this.titleWeight)
         .fontSize(this.titleSize)

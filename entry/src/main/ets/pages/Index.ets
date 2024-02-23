@@ -68,7 +68,7 @@ struct Index {
           ForEach(this.allCards, (item: Card) => {
             ListItem() {
               CardComponent({ item: item, radius: 16.0 })
-                .height(240)
+                .height(200)
             }
           })
         }

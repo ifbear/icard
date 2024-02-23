@@ -132,6 +132,7 @@ export struct CardComponent {
               subtitleColor: Color.White,
               subtitleWeight: FontWeight.Regular
             })
+
             Image(this.getOrganizeImageResource(this.item))
               .width(120)
           }
