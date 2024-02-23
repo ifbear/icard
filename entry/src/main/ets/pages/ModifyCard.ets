@@ -217,8 +217,8 @@ struct Edit {
       .backgroundColor('#EFEFEF')
     }
     .title("编辑")
-    .hideBackButton(false)
     .backButtonIcon($r('app.media.closeIcon'))
+    .hideBackButton(false)
     .titleMode(NavigationTitleMode.Mini)
     .menus(this.navigationMenus())
   }
