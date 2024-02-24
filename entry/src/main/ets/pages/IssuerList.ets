@@ -92,49 +92,105 @@ export struct IssuerBank {
   }
 
   build() {
-    Navigation() {
-      List({ space: 16 }) {
-        ForEach(this.allIssuers, (item: Issuer) => {
-          ListItem() {
-            Flex({
-              direction: FlexDirection.Row,
-              justifyContent: FlexAlign.SpaceBetween,
-              alignItems: ItemAlign.Center
-            }) {
-              Text(item.name)
-                .fontColor(Color.Black)
-                .fontSize(18)
-                .backgroundColor(Color.White)
-                .borderRadius(12)
-              if (this.selectedIssuer != undefined && this.selectedIssuer.id === item.id) {
-                Image($r('app.media.checkmarkIcon'))
-                  .width(24.0)
-              } else {
-                Image('')
-              }
-            }
-            .width('100%')
-            .height('100%')
-          }
-          .height(54)
-          .backgroundColor(Color.White)
-          .padding({ left: 16, right: 16 })
-          .onClick(() => {
-            this.selectedIssuer = item
-          })
+    Column() {
+      Row() {
+        RelativeContainer() {
+          Image($r('app.media.closeIcon'))
+            .id('close')
+            .width(18)
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              left: { anchor: '__container__', align: HorizontalAlign.Start }
+            })
+            .onClick(() => {
+              router.back()
+            })
 
-        })
+          Text('选择发行者')
+            .id('title')
+            .fontSize(18)
+            .fontWeight(FontWeight.Bold)
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+
+          Image($r('app.media.secondListAdd'))
+            .id('add')
+            .width(18)
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              right: { anchor: 'complete', align: HorizontalAlign.Start }
+            })
+            .onClick(() => {
+              this.issuerDialog.open()
+            })
+
+          Text('完成')
+            .id('complete')
+            .fontWeight(FontWeight.Medium)
+            .fontColor(this.selectedIssuer ? $r('app.color.major') : Color.Gray)
+            .fontSize(16)
+            .margin({ left: 8 })
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              right: { anchor: '__container__', align: HorizontalAlign.End }
+            })
+            .onClick(async () => {
+              if (this.selectedIssuer != null && this.selectedIssuer != undefined) {
+                router.back({ url: "pages/ModifyCard", params: { 'issuer': this.selectedIssuer } })
+              }
+            })
+
+        }
+        .width('100%')
+        .height('100%')
       }
-      .padding(16)
+      .padding({ left: 16, right: 16 })
+      .width('100%')
+      .height(44)
+      .backgroundColor(Color.White)
+
+      Column() {
+        List({ space: 16 }) {
+          ForEach(this.allIssuers, (item: Issuer) => {
+            ListItem() {
+              Flex({
+                direction: FlexDirection.Row,
+                justifyContent: FlexAlign.SpaceBetween,
+                alignItems: ItemAlign.Center
+              }) {
+                Text(item.name)
+                  .fontColor(Color.Black)
+                  .fontSize(18)
+                  .backgroundColor(Color.White)
+                  .borderRadius(12)
+                if (this.selectedIssuer != undefined && this.selectedIssuer.id === item.id) {
+                  Image($r('app.media.checkmarkIcon'))
+                    .width(24.0)
+                } else {
+                  Image('')
+                }
+              }
+              .width('100%')
+              .height('100%')
+            }
+            .borderRadius(8)
+            .height(54)
+            .backgroundColor(Color.White)
+            .padding({ left: 16, right: 16 })
+            .onClick(() => {
+              this.selectedIssuer = item
+            })
+
+          })
+        }
+        .padding(16)
+      }
       .width('100%')
       .height('100%')
       .backgroundColor($r('app.color.groupBackground'))
     }
-    .hideBackButton(false)
-    .title("选择发行者")
-    .titleMode(NavigationTitleMode.Mini)
-    .menus(this.navigationMenus())
-    .height('100%')
   }
 
   /**

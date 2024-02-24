@@ -30,7 +30,10 @@ export struct SheetDialog {
             .fontColor(item.fontColor)
             .fontSize(item.fontSize)
             .height(44)
-            .onClick(item.event)
+            .onClick(() => {
+              this.controller.close()
+              item.event()
+            })
         }
       })
     }

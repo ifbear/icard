@@ -8,13 +8,15 @@ import { DayDialog } from '../component/DayDialog'
 import { IssuerBank } from './IssuerList'
 import { OrganizeDialog } from '../component/OrganizeDialog';
 import { PickerDateDialog } from '../component/PickerDateDialog';
+import display from '@ohos.display';
 
 @Entry
 @Component
 struct Edit {
-  @State card?: Card = router.getParams()['card'] as Card
+  private window = display.getDefaultDisplaySync()
+  @State card?: Card = undefined
+  @State title?: string = undefined
   agcDataBase: Database | undefined = undefined
-
   organizeDialog = new CustomDialogController({
     builder: OrganizeDialog({
       selectHandler: (val) => {
@@ -23,7 +25,6 @@ struct Edit {
     }),
     alignment: DialogAlignment.Center
   })
-
   pickerDateDialog = new CustomDialogController({
     builder: PickerDateDialog({
       selected: this.card.deadline ? new Date(this.card.deadline) : new Date(),
@@ -38,6 +39,12 @@ struct Edit {
   })
 
   async aboutToAppear() {
+    if (router.getParams().hasOwnProperty('card')) {
+      this.card = router.getParams()['card'] as Card
+    }
+    if (router.getParams().hasOwnProperty('title')) {
+      this.title = router.getParams()['title'] as string
+    }
     await this.getDatabase()
   }
 
@@ -54,7 +61,9 @@ struct Edit {
   }
 
   async getDatabase() {
-    if (this.agcDataBase != null && this.agcDataBase != undefined) { return; }
+    if (this.agcDataBase != null && this.agcDataBase != undefined) {
+      return;
+    }
     const context = getContext(this)
     const value = await context.resourceManager.getRawFileContent('schema.json');
     let json: string = buffer.from(value).toString("utf8");
@@ -62,37 +71,83 @@ struct Edit {
     this.agcDataBase = cloud.database({ objectTypeInfo: info, zoneName: "ICARD" })
   }
 
-  // 导航按钮
-  @Builder navigationMenus() {
-    Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.End, alignItems: ItemAlign.Center}) {
-      Text('保存')
-        .fontSize(18)
-        .fontColor($r('app.color.major'))
-        .onClick( async () => {
-          try {
-            this.card.update = new Date()
-            console.log(JSON.stringify(this.card), "数据")
-            await (this.agcDataBase as Database)
-              .collection(Card)
-              .upsert(this.card)
-            setTimeout(() => {
-              router.back()
-            }, 3000)
-          } catch (error) {
-            promptAction.showToast({ message: JSON.stringify(error), duration: 5000, bottom: '50%' })
-          }
-        })
-    }
-  }
-
   // 布局
   build() {
-    Navigation() {
+    Column() {
+      Row() {
+        RelativeContainer() {
+          Image($r('app.media.closeIcon'))
+            .id('close')
+            .width(18)
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              left: { anchor: '__container__', align: HorizontalAlign.Start }
+            })
+            .onClick(() => {
+              router.back()
+            })
+
+          Text(this.title)
+            .id('title')
+            .fontSize(18)
+            .fontWeight(FontWeight.Bold)
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+
+          Text('完成')
+            .id('complete')
+            .fontWeight(FontWeight.Medium)
+            .fontSize(16)
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              right: { anchor: '__container__', align: HorizontalAlign.End }
+            })
+            .onClick(async () => {
+              try {
+                if (this.card.id == undefined || this.card.id == null) {
+                  this.card.id = new Date().getTime().toString()
+                }
+                this.card.update = new Date()
+                if (this.card.card_no == null) {
+                  promptAction.showToast({ message: '卡号不能为空', bottom: -500, duration: 3000 })
+                  return
+                }
+                if (this.card.issuer == null) {
+                  promptAction.showToast({ message: '发行者不能为空', bottom: -500, duration: 3000 })
+                  return
+                }
+                if (this.card.billday == null) {
+                  promptAction.showToast({ message: '账单日不能为空', bottom: -500, duration: 3000 })
+                  return
+                }
+                if (this.card.payday == null) {
+                  promptAction.showToast({ message: '还款日不能为空', bottom: -500, duration: 3000 })
+                  return
+                }
+                await this.agcDataBase.collection(Card).upsert(this.card)
+                setTimeout(() => {
+                  router.back()
+                }, 500)
+              } catch (error) {
+                promptAction.showToast({ message: '错误：'+JSON.stringify(error), bottom: -500, duration: 3000 })
+              }
+            })
+
+        }
+        .width('100%')
+        .height('100%')
+      }
+      .width('100%')
+      .height(44)
+      .padding({ left: 16, right: 16 })
+      .backgroundColor(Color.White)
+
       Column() {
         TextInput({ placeholder: '卡号', text: this.card.card_no ?? '' })
           .maxLength(16)
           .height(52.0)
-          .margin({ top: 20 })
           .placeholderColor(Color.Gray)
           .borderRadius(8.0)
           .backgroundColor(Color.White)
@@ -209,18 +264,12 @@ struct Edit {
           .onChange((val: string) => {
             this.card.remark = val
           })
-
       }
-      .width('100%')
-      .height('100%')
-      .padding(16.0)
-      .backgroundColor('#EFEFEF')
+      .padding(16)
     }
-    .title("编辑")
-    .backButtonIcon($r('app.media.closeIcon'))
-    .hideBackButton(false)
-    .titleMode(NavigationTitleMode.Mini)
-    .menus(this.navigationMenus())
+    .width('100%')
+    .height('100%')
+    .backgroundColor('#EFEFEF')
   }
 
   pageTransition() {

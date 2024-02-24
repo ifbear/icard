@@ -3,20 +3,36 @@ import Organize, { Card, ORGANIZE_MODELS } from '../Models'
 import { SubtitleComponent } from './SubtitleComponent'
 import { SheetItem, SheetDialog } from './SheetDialog'
 
+export enum CardEvent {
+  Edit = 1001,
+  Delete = 2001
+}
+
 @Component
 export struct CardComponent {
   item: Card
   radius: Length
   @State isReverse: boolean = false
 
-  // 编辑
-  edit() {
-    router.pushUrl({ url: "pages/Edit", params: { 'card': this.item } })
-  }
+  actionHandler?: (event?: CardEvent, item?: Card) => void
 
-  // 删除
-  delete() {
-    console.log("删除")
+  sheetDialog = new CustomDialogController({
+  builder: SheetDialog({
+    items: [
+      new SheetItem('编辑', () => {
+        this.actionHandler(CardEvent.Edit, this.item)
+      }, Color.Black, 18.0),
+      new SheetItem('删除', () => {
+        this.actionHandler(CardEvent.Delete, this.item)
+      }, Color.Red, 18.0)
+    ]
+  }),
+  alignment: DialogAlignment.Bottom,
+  offset: { dx: 0, dy: -20 }
+})
+
+  aboutToDisappear() {
+    this.sheetDialog = null
   }
 
   getOrganizeImageResource(item: Card): Resource {
@@ -68,21 +84,7 @@ export struct CardComponent {
             Image($r('app.media.moreBtn'))
               .width(44)
               .onClick(() => {
-                const dialog = new CustomDialogController({
-                  builder: SheetDialog({
-                    items: [
-                      new SheetItem('编辑', () => {
-                        this.edit()
-                      }, Color.Black, 18.0),
-                      new SheetItem('删除', () => {
-                        this.delete()
-                      }, Color.Red, 18.0)
-                    ]
-                  }),
-                  alignment: DialogAlignment.Bottom,
-                  offset: { dx: 0, dy: -20 }
-                })
-                dialog.open()
+                this.sheetDialog.open()
               })
           } else {
             Image($r('app.media.PaidBtn'))
